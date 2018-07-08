@@ -150,6 +150,10 @@ func NewFTSIndexer(clusterURL, namespace, keyspace string) (
 
 // ----------------------------------------------------
 
+func (indexer *indexer) MetadataVersion() uint64 {
+	return 0 // TODO.
+}
+
 func (indexer *indexer) KeyspaceId() string {
 	return indexer.keyspace
 }
@@ -713,6 +717,10 @@ func (indexer *indexer) SetLogLevel(level logging.Level) {
 }
 
 // ------------------------------------------------
+
+func (i *index) Indexer() datastore.Indexer {
+	return i.indexer
+}
 
 // Id of the keyspace to which this index belongs.
 func (i *index) KeyspaceId() string {
