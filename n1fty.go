@@ -26,11 +26,12 @@ import (
 	"sync"
 	"time"
 
-	"github.com/blevesearch/bleve"
+	"github.com/blevesearch/bleve/mapping"
 
 	"github.com/couchbase/cbft"
 	"github.com/couchbase/cbgt"
 	"github.com/couchbase/gocb"
+
 	gocbCBFT "github.com/couchbase/gocb/cbft"
 
 	"github.com/couchbase/query/datastore"
@@ -111,7 +112,7 @@ type index struct {
 type indexField struct {
 	docType   string
 	isDefault bool // True when docType is for the default mapping.
-	field     *bleve.FieldMapping
+	field     *mapping.FieldMapping
 }
 
 // ----------------------------------------------------
@@ -499,10 +500,15 @@ OUTER:
 			continue
 		}
 
-		bm := bp.Mapping
+		bm, ok := bp.Mapping.(*mapping.IndexMappingImpl)
+		if !ok {
+			logging.Infof("FTS convertIndexDefs SKIP indexDef: %+v, "+
+				" not IndexMappingImpl", indexDef)
+			continue
+		}
 
 		if bm.IndexDynamic { // TODO: Handle IndexDynamic one day.
-			logging.Infof("FTS convertIndexDefs SKIP indexDef: %+v,"+
+			logging.Infof("FTS convertIndexDefs SKIP indexDef: %+v, "+
 				" IndexDynamic", indexDef)
 			continue
 		}
@@ -640,7 +646,7 @@ OUTER:
 // ------------------------------------------------
 
 // convertDocMap() recursively processes the parts of a
-// bleve.DocumentMapping into one or more N1QL datastore.Index
+// mapping.DocumentMapping into one or more N1QL datastore.Index
 // metadata instances.
 //
 // The docType might be nil when it's the default docMapping.
@@ -651,7 +657,7 @@ OUTER:
 //
 // TODO: We currently ignore the _all / IncludeInAll feature.
 func (indexer *indexer) convertDocMap(docType string, isDefault bool,
-	docMapPath, docMapName string, docMap *bleve.DocumentMapping,
+	docMapPath, docMapName string, docMap *mapping.DocumentMapping,
 	rv map[string][]*indexField) bool {
 	if docMap == nil || !docMap.Enabled {
 		return true
