@@ -581,8 +581,7 @@ OUTER:
 			}
 		}
 
-		// Filter out any fieldPath that has uses a non-"keyword"
-		// analyzer.
+		// Filter out any fieldPath that has a non-"keyword" analyzer.
 		//
 		for fieldPath, indexFields := range fieldPathIndexFields {
 			for _, indexField := range indexFields {
