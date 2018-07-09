@@ -380,7 +380,7 @@ func (indexer *indexer) refresh() (map[string]*index, errors.Error) {
 // Returns array of FTS endpoint strings that look like
 // "http(s)://HOST:PORT".
 func (indexer *indexer) ftsEndpoints() (rv []string, err error) {
-	user, pswd := "", "" // Forces usage of auth manager.
+	user, pswd := "", ""                     // Forces usage of auth manager.
 	user, pswd = "Administrator", "password" // TODO.
 
 	buckets, err := indexer.cluster.Manager(user, pswd).GetBuckets()
@@ -812,7 +812,7 @@ func (i *index) Scan(requestId string, span *datastore.Span, distinct bool,
 
 	term := span.Range.Low[0].String() // Enclosed with double-quotes.
 	if term[0] == '"' && term[len(term)-1] == '"' {
-		term = term[1: len(term)-1]
+		term = term[1 : len(term)-1]
 	}
 
 	logging.Infof("fts index.Scan, index.id: %#v, requestId: %s, term: %s",
@@ -848,7 +848,7 @@ func (i *index) Scan(requestId string, span *datastore.Span, distinct bool,
 
 	if sresults.Status().Failed > 0 {
 		conn.Error(errors.NewError(nil,
-			fmt.Sprintf("fts search failed, status: %v", sresults.Status)))
+			fmt.Sprintf("fts search failed, status: %v", sresults.Status())))
 		return
 	}
 
